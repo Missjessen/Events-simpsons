@@ -16,15 +16,19 @@ export const useUser = () => {
   const fetchToken = async (email: string, password:string): Promise<void> => {
       try {
 
-        const response = await fetch(`${API_URL.replace(/\/$/, '')}/user/login`, {
+        const response = await fetch(`${API_URL}user/login`, {
+
 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'auth-token': localStorage.getItem('lsToken') || ''
         },
+
+
           body: JSON.stringify({ email, password })
       })
+      console.log("API URL:", API_URL);
 
         if (!response.ok) {
          const errorResponse = await response.json(); // Hent fejlrespons
@@ -55,9 +59,7 @@ export const useUser = () => {
   const registerUser = async (name: string, email: string, password: string): Promise<void> => {
     try {
 
-      
-        const response = await fetch(`${API_URL.replace(/\/$/, '')}/user/register`, {
-
+      const response = await fetch(`${API_URL}user/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
