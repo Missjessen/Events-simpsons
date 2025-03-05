@@ -16,7 +16,8 @@ export const useUser = () => {
   const fetchToken = async (email: string, password:string): Promise<void> => {
       try {
 
-        const response = await fetch(`${API_URL}/user/login`, {
+        const response = await fetch(`${API_URL.replace(/\/$/, '')}/user/login`, {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +55,9 @@ export const useUser = () => {
   const registerUser = async (name: string, email: string, password: string): Promise<void> => {
     try {
 
-      const response = await fetch(`${API_URL}/user/register`, {
+      
+        const response = await fetch(`${API_URL.replace(/\/$/, '')}/user/register`, {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
