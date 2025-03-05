@@ -92,17 +92,18 @@ const uploadImage = async () => {
   formData.append('image', file.value);
 
   try {
-    const response = await fetch('http://localhost:4000/upload', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/upload`, {
       method: 'POST',
       body: formData
     });
 
     const data = await response.json();
-    newEvent.value.imageURL = `http://localhost:4000${data.imageUrl}`;
+    newEvent.value.imageURL = `${import.meta.env.VITE_API_URL}${data.imageUrl}`;
   } catch (error) {
     console.error('Upload failed:', error);
   }
 };
+
 
 const addEventHandler = async () => {
   await addEvent({
