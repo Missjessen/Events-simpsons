@@ -61,8 +61,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useEvents } from '../../modules/useEvents';
+import { API_URL } from '../../config'; // Import API_URL ét sted fra
+
 
 const { events, fetchEvents, addEvent, deleteEvent, error, loading } = useEvents();
+
 
 const newEvent = ref({
   title: '',
@@ -92,13 +95,13 @@ const uploadImage = async () => {
   formData.append('image', file.value);
 
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/upload`, {
+    const response = await fetch(`${API_URL}/upload`, {
       method: 'POST',
       body: formData
     });
 
     const data = await response.json();
-    newEvent.value.imageURL = `${import.meta.env.VITE_API_URL}${data.imageUrl}`;
+    newEvent.value.imageURL = `${API_URL}${data.imageUrl}`;
   } catch (error) {
     console.error('Upload failed:', error);
   }
