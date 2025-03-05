@@ -1,151 +1,182 @@
 <template>
   <div class="bg-[#181818] min-h-screen lazy-css">
-    <h1 class="text-3xl font-bold mb-8">Admin View</h1>
-    <div v-if="loading" class="text-center">Loading...</div>                             <!-- Loading wait screen -->
-    <div v-else-if="error" class="text-center text-red-500"> {{ error  }}</div>                         <!-- Error message -->
-    <div class="flex flex-wrap -mx-2">                                    <!-- add new product section -->
+    <h1 class="text-3xl font-bold mb-8">Admin - Manage Events</h1>
+
+    <div v-if="loading" class="text-center">Loading...</div> <!-- Loading wait screen -->
+    <div v-else-if="error" class="text-center text-red-500">{{ error }}</div> <!-- Error message -->
+
+    <!-- Add Event Form -->
     <div class="my-8 p-2 w-full">
-      <h2 class="text-2xl font-semibold mb-4">Add Product</h2>
-      <form @submit.prevent="addProductHandler">                                                               <!-- Add product form -->
+      <h2 class="text-2xl font-semibold mb-4">Add Event</h2>
+      <form @submit.prevent="addEventHandler">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <input type="text" v-model="newProducts.name" class="p-2 border rounded" />         <!-- Product name -->
-          <span  class="absolute text-red-500 text-xs ml-2">Can't be empty</span> <!-- Error message & validate -->
+          <input type="text" v-model="newEvent.title" placeholder="Event Title" class="p-2 border rounded" required />
+          <input type="date" v-model="newEvent.date" class="p-2 border rounded" required />
+          <input type="text" v-model="newEvent.eventlocation" placeholder="Location" class="p-2 border rounded" required />
+          <textarea v-model="newEvent.description" placeholder="Description" class="p-2 border rounded" required></textarea>
+          <input type="number" v-model="newEvent.maxAttendees" placeholder="Max Attendees" class="p-2 border rounded" required />
 
-          <input type="text" v-model="newProducts.description"  placeholder="Description" class="p-2 border rounded" /> <!-- Product description -->
-          <div class="p-2 border rounded">
+          <!-- Image Upload -->
+          <input type="file" @change="handleFileUpload" class="file-input">
+          <button type="button" @click="uploadImage" class="btn">Upload Image</button>
 
-            <span class="uppercase font-bold">Product Price: </span>
-            <input type="number" v-model="newProducts.price"  placeholder="Price" class=" pl-2 " /> <!-- Product price -->
+          <!-- Preview uploaded image -->
+          <div v-if="newEvent.imageURL">
+            <p>Uploaded Image:</p>
+            <img :src="newEvent.imageURL" alt="Uploaded Image" class="preview">
           </div>
-          <div class="p-2 border rounded">
-
-            <span class="uppercase font-bold">Product Stock: </span>
-            <input type="number" v-model="newProducts.stock" placeholder="Stock" class=" pl-2 " />  <!-- Product stock -->
-          </div>
-          <div class="p-2 border rounded flex items-center">
-
-            <input type="checkbox" v-model="newProducts.isONdiscount" class="border rounded w-6 h-6 mr-2" /> <span class="uppercase font-bold">Discount in %:</span> <!-- Discount in % -->
-            <input type="number" v-model="newProducts.discountPct" placeholder="Discount %" class=" ml-2 pl-2 " /> <!-- Discount % -->
-          </div>
-          <div class="p-2 border rounded flex items-center ">
-            <input type="checkbox" v-model="newProducts.isHidden" class="p-2 border rounded w-6 h-6 mr-2" /> <span class="uppercase font-bold">Hidden product</span> <!-- Hidden product -->
-          </div>
-          <input type="text" v-model="newProducts.imageURL" placeholder="Image URL" class="p-2 border rounded h-10" /> <!-- Image URL -->
-
         </div>
-        <button type="submit" class="mt-4 bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Create</button>
+        <button type="submit" class="mt-4 bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Create Event</button>
       </form>
     </div>
 
-    <!-- Edit existing products -->
+    <!-- Event List -->
     <div class="my-8 p-2 w-full">
+      <h2 class="text-2xl font-semibold mb-4">Events</h2>
+      <div class="mb-4 p-4 border rounded bg-[#181818]" v-for="event in events" :key="event._id">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input type="text" v-model="event.title" placeholder="Event Title" class="p-2 border rounded" />
+          <input type="date" v-model="event.date" class="p-2 border rounded" />
+          <input type="text" v-model="event.eventlocation" placeholder="Location" class="p-2 border rounded" />
+          <textarea v-model="event.description" placeholder="Description" class="p-2 border rounded"></textarea>
+          <input type="number" v-model="event.maxAttendees" placeholder="Max Attendees" class="p-2 border rounded" />
 
-      <h2 class="text-2xl font-semibold mb-4">Products</h2>
-      <div class="mb-4 p-4 border rounded bg-[#181818]" v-for="product in products" :key="product._id"> <!-- Loop through the products -->
-         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <input type="text" v-model="product.name" placeholder="Name" class="p-2 border rounded" /> <!-- Product name -->
-          <input type="text" v-model="product.description" placeholder="Description" class="p-2 border rounded" /> <!-- Product description -->
-          <div class="p-2 border rounded">
-
-            <span class="uppercase font-bold">Product Price: </span>
-            <input type="number" v-model="product.price" placeholder="Price" class=" pl-2 " /> <!-- Product price -->
+          <!-- Image URL -->
+          <input type="text" v-model="event.imageURL" placeholder="Image URL" class="p-2 border rounded h-10" />
+          <div>
+            <p>Thumbnail:</p>
+            <img :src="event.imageURL" alt="Event Image" class="h-24 w-24 object-cover mb-4 rounded-lg">
           </div>
-          <div class="p-2 border rounded">
-
-            <span class="uppercase font-bold">Product Stock: </span>
-            <input type="number" v-model="product.stock"  placeholder="Stock" class=" pl-2 " /> <!-- Product stock -->
-          </div>
-          <div class="p-2 border rounded flex items-center">
-
-            <input type="checkbox" class="border rounded w-6 h-6 mr-2" v-model="product.isONdiscount"/> <span class="uppercase font-bold">Discount in %:</span> <!-- Discount in % -->
-            <input type="number"  placeholder="Discount %" class=" ml-2 pl-2 " v-model="product.discountPct"/> <!-- Discount % -->
-          </div>
-          <div class="p-2 border rounded flex items-center ">
-            <input type="checkbox"  class="p-2 border rounded w-6 h-6 mr-2" v-model="product.isHidden"/> <span class="uppercase font-bold">Hidden product</span> <!-- Hidden product -->
-          </div>
-          <input type="text" v-model="product.imageURL" placeholder="Image URL" class="p-2 border rounded h-10" /> <!-- Image URL -->
-          <span>
-            Thumbnail img: <img :src="product.imageURL" alt="Product Image" class="h-24 w-24 object-cover mb-4 rounded-lg"> <!-- Product image -->
-          </span>
         </div>
 
-        <div class="mt-4 flex space-x-2"> <!-- Update and delete buttons -->
-          <p>ID:  </p> <!-- Product ID for testing -->
-          <button  @click="deleteProduct(product._id)" class="bg-red-600 text-white p-2 rounded hover:bg-red-700">Delete</button> <!-- Delete button -->
-          <!-- <button @click="updateProductHandler" class="bg-green-600 text-white p-2 rounded hover:bg-green-700">Edit</button> Edit button -->
-         </div>
+        <!-- Delete Button -->
+        <div class="mt-4 flex space-x-2">
+          <button @click="deleteEvent(event._id)" class="bg-red-600 text-white p-2 rounded hover:bg-red-700">Delete</button>
+        </div>
       </div>
     </div>
-  </div>
-     <!-- Custom confirmation dialog -->
-
   </div>
 </template>
 
 <script setup lang="ts">
-//import type { Product} from '../../interfaces/interfaces';
-import { ref } from 'vue'
-import { onMounted } from 'vue'
-import { useProducts } from '../../modules/useProducts'
+import { ref, onMounted } from 'vue';
+import { useEvents } from '../../modules/useEvents';
 
+const { events, fetchEvents, addEvent, deleteEvent, error, loading } = useEvents();
 
-const { products, error, loading,  fetchProducts, deleteProduct, addProducts, getTokenAndUserId /*updateProduct*/ } = useProducts()
-
-onMounted(() => {
-  fetchProducts();
+const newEvent = ref({
+  title: '',
+  date: '',
+  eventlocation: '',
+  description: '',
+  maxAttendees: 100,
+  imageURL: '' // Updated after file upload
 });
 
-const newProducts = ref({
-  name: '',
-  description: '',
-  price: 0,
-  stock: 0,
-  isONdiscount: false,
-  discountPct: 0,
-  isHidden: false,
-  imageURL: '',
-  _createdBy: ''
-})
+const file = ref<File | null>(null);
 
-const addProductHandler = async () => {
-  const {userId} = getTokenAndUserId();
-  newProducts.value._createdBy = userId;
-  await addProducts(newProducts.value)
-  newProducts.value = {
-
-    ...newProducts.value,
-}
-}
-
-/*
-const updateProductHandler = async (product: Product) => {
-  const updateProduct = {
-    name: product.name,
-    description: product.description,
-    price: product.price,
-    stock: product.stock,
-    isONdiscount: product.isONdiscount,
-    discountPct: product.discountPct,
-    isHidden: product.isHidden,
-    imageURL: product.imageURL,
-    _createdBy: product._createdBy
+const handleFileUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files?.length) {
+    file.value = target.files[0];
   }
-  await updateProduct(product._id, updateProduct)
-} */
+};
 
+const uploadImage = async () => {
+  if (!file.value) {
+    alert('Vælg en fil først!');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('image', file.value);
+
+  try {
+    const response = await fetch('http://localhost:4000/upload', {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await response.json();
+    newEvent.value.imageURL = `http://localhost:4000${data.imageUrl}`;
+  } catch (error) {
+    console.error('Upload failed:', error);
+  }
+};
+
+const addEventHandler = async () => {
+  await addEvent({
+    ...newEvent.value,
+    date: new Date(newEvent.value.date)
+  });
+  newEvent.value = {
+    title: '',
+    date: '',
+    eventlocation: '',
+    description: '',
+    maxAttendees: 100,
+    imageURL: ''
+  };
+  await fetchEvents();
+};
+
+onMounted(() => {
+  fetchEvents();
+});
 </script>
 
 <style scoped>
-input {
-  background-color: #2b2b2b;
+.admin-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
 }
-
-.lazy-css {
-  color: #969696 ;
+.event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-
-input[type=checkbox] {
-  accent-color: var(--input-field-color);
+.input-field, .file-input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
-
+.btn {
+  padding: 10px;
+  background-color: blue;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.btn-primary {
+  background-color: green;
+}
+.btn-danger {
+  background-color: red;
+  color: white;
+}
+.preview {
+  width: 100px;
+  margin-top: 10px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+.events-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.event-card {
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+.event-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 5px;
+}
 </style>
