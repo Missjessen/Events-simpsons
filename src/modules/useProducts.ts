@@ -51,7 +51,6 @@ const validateProduct = (product: newProducts):void => {
 }
   const setDefaultValues = (product: newProducts, userId: string) => {
     return {
-
       name: product.name,
       description: product.description || 'new product description default value',
       imageURL: product.imageURL || 'https://picsum.photos/500/500',

@@ -1,30 +1,27 @@
 <template>
-  <div class="flex h-max">
-    <!-- Left side with background image -->
-    <div class="w-1/2 bg-cover bg-center" style="background-image: url('https://picsum.photos/800/1200'); background-color: var(--vt-c-black, #181818);"></div>
+  <div class="hero">
+    <!-- Hero baggrund -->
+    <!-- //<img src="/assets/img/simpsons-fox.jpg" alt="Simpsons Hero" class="hero-image"> -->
 
-    <!-- Right side with login and register forms -->
-    <div class="w-1/2 bg-[#181818] flex-grow text-gray-300 flex flex-col p-8">
-      <!-- Top part: Login and Logout -->
-      <div>
-        <p class="text-2xl mb-4">Login / Logout</p>
-        <input type="text" class="m-2 p-2 border-b border-gray-500 bg-transparent text-gray-300 focus:outline-none" placeholder="Email" v-model="email" /> <!-- v-model for email -->
-        <input type="password" class="m-2 p-2 border-b border-gray-500 bg-transparent text-gray-300 focus:outline-none" placeholder="Password"  v-model="password"/> <!-- v-model for password -->
-        <button class="bg-[#1E40AF] text-white p-2 rounded hover:bg-[#1E3A8A] w-full mt-4" @click="fetchToken(email, password)">Login</button> <!-- Login button -->
-        <button class="bg-[#4B5563] text-white p-2 rounded hover:bg-[#374151] w-full mt-2" @click="logout()" >Logout</button> <!-- Logout button -->
-      </div>
+    <!-- Login/Register Card -->
+    <div class="card">
+      <p class="text-2xl mb-4">Login / Logout</p>
+      <input type="text" class="input-field" placeholder="Email" v-model="email" />
+      <input type="password" class="input-field" placeholder="Password" v-model="password" />
+      <button class="btn-primary" @click="fetchToken(email, password)">Login</button>
+      <button class="btn-secondary" @click="logout()">Logout</button>
 
-      <!-- Lower part: Register -->
+      <!-- Register -->
       <div class="register-block">
-        <p class="text-2xl mt-24 mb-4 flex-nowrap cursor-pointer" @click="toggleRegisterDialog">Click to register</p> <!-- Register button -->
+        <p class="text-xl mt-6 cursor-pointer underline" @click="toggleRegisterDialog">Click to register</p>
         <dialog ref="registerDialog">
-          <form class="flex flex-wrap">
-            <input type="text" class="m-2 p-2 border-b border-gray-500 bg-transparent text-gray-300 focus:outline-none flex-1" placeholder="Name" v-model="name" />   <!-- v-model for name -->
-            <input type="text" class="m-2 p-2 border-b border-gray-500 bg-transparent text-gray-300 focus:outline-none flex-1" placeholder="Email" v-model="email" /> <!-- v-model for email -->
-            <input type="password" class="m-2 p-2 border-b border-gray-500 bg-transparent text-gray-300 focus:outline-none flex-1 w-full" placeholder="Password" v-model="password"  /> <!-- v-model for password -->
-            <button class="bg-[#10B981] text-white p-2 rounded hover:bg-[#059669] w-full mt-4" @click.prevent="registerUser(name, email, password)" >Register</button> <!-- Register button -->
+          <form class="register-form">
+            <input type="text" class="input-field" placeholder="Name" v-model="name" />
+            <input type="text" class="input-field" placeholder="Email" v-model="email" />
+            <input type="password" class="input-field" placeholder="Password" v-model="password" />
+            <button class="btn-success" @click.prevent="registerUser(name, email, password)">Register</button>
           </form>
-          <button class="bg-red-600 text-white p-2 rounded hover:bg-red-700 w-full mt-2" @click="toggleRegisterDialog" >Close</button> <!-- Close button -->
+          <button class="btn-danger" @click="toggleRegisterDialog">Close</button>
         </dialog>
       </div>
     </div>
@@ -51,23 +48,126 @@ const toggleRegisterDialog = () => {
     }
   }
 }
-
 </script>
 
 <style scoped>
-.register-block {
-
-  display: flex;
+/* Hero Styling */
+.hero {
   position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: url('/src/assets/img/simpsons-fox.jpg') no-repeat center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
 }
 
+/* Hero Billede */
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
 
+/* Card Container */
+.card {
+  background-color: rgba(24, 24, 24, 0.9);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 90%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+}
+
+/* Input-felter */
+.input-field {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 0.8rem;
+  border: 1px solid #666;
+  border-radius: 5px;
+  background: #222;
+  color: white;
+  outline: none;
+}
+
+/* Knapper */
+.btn-primary {
+  background-color: #1E40AF;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  width: 100%;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: #1E3A8A;
+}
+
+.btn-secondary {
+  background-color: #4B5563;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  width: 100%;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-secondary:hover {
+  background-color: #374151;
+}
+
+.btn-success {
+  background-color: #10B981;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  width: 100%;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-success:hover {
+  background-color: #059669;
+}
+
+.btn-danger {
+  background-color: red;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  width: 100%;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-danger:hover {
+  background-color: darkred;
+}
+
+/* Register Dialog */
 dialog {
-  background-color: var(--vt-c-black, #181818);
-  border-left: 1px solid var(--vt-c-gray-500, #9CA3AF);
+  background-color: #181818;
+  border-left: 1px solid #9CA3AF;
   padding: 1rem;
   position: absolute;
-  top:8rem;
+  top: 8rem;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.5s;
@@ -75,12 +175,15 @@ dialog {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  border-radius: 8px;
 }
+
 dialog[open] {
   opacity: 1;
   pointer-events: inherit;
 }
+
 dialog::backdrop {
-  background-color: rgba(0,0,255, 0.2);
+  background-color: rgba(0, 0, 255, 0.2);
 }
 </style>

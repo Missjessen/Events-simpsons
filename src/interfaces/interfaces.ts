@@ -28,12 +28,14 @@ createdAt: string
 }
 
 export type Event = {
+  _id: string;
   title: string;
   date: Date;
   eventlocation: string;
   description: string;
   maxAttendees: number;
   attendees: string;
-  createdBy: string;
+  imageURL: string;
+  _createdBy: string;
 
 }

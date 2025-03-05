@@ -1,76 +1,42 @@
 <template>
-  <div class="container mx-auto p-6">
-    <h2 class="text-2xl font-bold text-yellow-500 mb-4">Simpsons Events</h2>
+  <div class="">
+    <h2 class="text-2xl font-bold mb-4">Upcoming Events</h2>
 
-    <div v-if="loading" class="text-center text-gray-700">Loading events...</div>
-    <div v-else-if="error" class="text-center text-red-500">{{ error }}</div>
+    <div v-if="loading" class="text-center">Loading...</div> <!-- Loading wait screen -->
+    <div v-else-if="error" class="text-center text-red-500">{{ error }}</div> <!-- Error message -->
 
-    <div class="mb-4">
-      <input v-model="newEvent.name" placeholder="Event navn" class="border p-2 mr-2">
-      <input v-model="newEvent.description" placeholder="Beskrivelse" class="border p-2 mr-2">
-      <input v-model="newEvent.imageURL" placeholder="Billede URL" class="border p-2">
-      <button @click="createEvent" class="ml-2 bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600">Tilføj Event</button>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      <div v-for="event in events" :key="event.id" class="bg-white p-4 rounded-lg shadow-lg relative">
-        <img :src="event.imageURL" alt="Event Image" class="w-full h-48 object-cover rounded-lg mb-4">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ event.name }}</h3>
-        <p class="text-gray-600">{{ event.description }}</p>
-        <button class="mt-4 bg-yellow-500 text-white px-3 py-2 rounded-lg hover:bg-yellow-600">Join Event</button>
-        <button @click="deleteEvent(event.id)" class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600">X</button>
+    <div v-else class="flex flex-wrap -mx-2">
+      <div v-for="event in events" :key="event._id" class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2">
+        <div class="bg-white p-4 rounded-lg shadow-md">
+          <img :src="event.imageURL" alt="Event Image" class="w-full h-48 object-cover mb-4 rounded-lg"> <!-- Event image -->
+          <h3 class="text-lg text-gray-700 font-semibold mb-2"> {{ event.title }} </h3>
+          <p class="text-gray-500 text-sm mb-2"> 📅 {{ formatDate(event.date) }} </p>
+          <p class="text-gray-700"> 📍 {{ event.eventlocation }} </p>
+          <p class="text-gray-600 mt-2"> {{ event.description }} </p>
+          <p class="text-blue-500 font-bold mt-2">Max Attendees: {{ event.maxAttendees }} </p>
+          <div class="flex justify-between mt-4">
+            <button class="bg-blue-500 text-white px-1 py-2 rounded hover:bg-blue-600">View Details</button>
+            <button class="bg-red-500 text-white px-1 py-2 rounded hover:bg-red-600" @click="deleteEvent(event._id)">Delete</button> <!-- Brug _id i stedet for title -->
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
+import { useEvents } from '../modules/useEvents';
 
-const events = ref([]);
-const loading = ref(true);
-const error = ref(null);
-const newEvent = ref({ name: '', description: '', imageURL: '' });
+const { events, fetchEvents, loading, error, deleteEvent } = useEvents();
 
-onMounted(async () => {
-  await fetchEvents();
+onMounted(() => {
+  fetchEvents();
 });
 
-const fetchEvents = async () => {
-  try {
-    const response = await fetch('/api/events');
-    if (!response.ok) throw new Error("Failed to fetch events");
-    events.value = await response.json();
-  } catch (err) {
-    error.value = "Failed to load events.";
-  } finally {
-    loading.value = false;
-  }
-};
-
-const createEvent = async () => {
-  try {
-    const response = await fetch('/api/events', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newEvent.value)
-    });
-    if (!response.ok) throw new Error("Failed to create event");
-    await fetchEvents();
-    newEvent.value = { name: '', description: '', imageURL: '' };
-  } catch (err) {
-    error.value = "Failed to create event.";
-  }
-};
-
-const deleteEvent = async (id) => {
-  try {
-    const response = await fetch(`/api/events/${id}`, { method: 'DELETE' });
-    if (!response.ok) throw new Error("Failed to delete event");
-    await fetchEvents();
-  } catch (err) {
-    error.value = "Failed to delete event.";
-  }
+// Format dato til pæn visning
+const formatDate = (date: Date | string) => {
+  return new Date(date).toLocaleDateString('da-DK', { year: 'numeric', month: 'long', day: 'numeric' });
 };
 </script>
 
