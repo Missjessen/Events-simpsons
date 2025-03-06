@@ -14,44 +14,40 @@ export const useUser = () => {
   const password = ref<string>('');
 
   const fetchToken = async (email: string, password:string): Promise<void> => {
-      try {
+    try {
 
-        const response = await fetch(`${API_URL}user/login`, {
+      const response = await fetch(`https://mdb-rest.onrender.com/api/user/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('lsToken') || ''
+      },
+        body: JSON.stringify({ email, password })
+    })
 
+      if (!response.ok) {
+       const errorResponse = await response.json(); // Hent fejlrespons
+       console.log(errorResponse.error || 'Error');
+       throw new Error(errorResponse.error || 'No data available');
+   }
 
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'auth-token': localStorage.getItem('lsToken') || ''
-        },
+    const authResponse = await response.json()
+    token.value = authResponse.data.token
+    user.value = authResponse.data.user
+    isLoggedIn.value = true
 
-
-          body: JSON.stringify({ email, password })
-      })
-      console.log("API URL:", API_URL);
-
-        if (!response.ok) {
-         const errorResponse = await response.json(); // Hent fejlrespons
-         console.log(errorResponse.error || 'Error');
-         throw new Error(errorResponse.error || 'No data available');
-     }
-
-      const authResponse = await response.json()
-      token.value = authResponse.data.token
-      user.value = authResponse.data.user
-      isLoggedIn.value = true
-
-      localStorage.setItem('lsToken', authResponse.data.token);
-      localStorage.setItem('userIDToken', authResponse.data.userId)
-      console.log('user is logged in', authResponse)
-      console.log('token', token.value)
-    }
-    catch (err) {
-      error.value = (err as Error).message || 'An error occurred'
-      isLoggedIn.value = false
-    }
-
+    localStorage.setItem('lsToken', authResponse.data.token);
+    localStorage.setItem('userIDToken', authResponse.data.userId)
+    console.log('user is logged in', authResponse)
+    console.log('token', token.value)
   }
+  catch (err) {
+    error.value = (err as Error).message || 'An error occurred'
+    isLoggedIn.value = false
+  }
+
+}
+
 
 
 
@@ -59,7 +55,7 @@ export const useUser = () => {
   const registerUser = async (name: string, email: string, password: string): Promise<void> => {
     try {
 
-      const response = await fetch(`${API_URL}user/register`, {
+      const response = await fetch(`https://mdb-rest.onrender.com/api/user/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

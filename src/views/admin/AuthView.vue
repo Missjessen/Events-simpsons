@@ -48,6 +48,7 @@ const toggleRegisterDialog = () => {
     }
   }
 }
+
 </script>
 
 <style scoped>
