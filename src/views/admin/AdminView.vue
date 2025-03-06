@@ -95,16 +95,23 @@ const uploadImage = async () => {
   formData.append('image', file.value);
 
   try {
-    const response = await fetch(`${API_URL}upload`, {
-      method: 'POST',
-      body: formData
-    });
+  const response = await fetch(`${API_URL}/upload`, {
+    method: 'POST',
+    body: formData
+  });
 
-    const data = await response.json();
-    newEvent.value.imageURL = `${API_URL}${data.imageUrl}`;
-  } catch (error) {
-    console.error('Upload failed:', error);
+  const textResponse = await response.text(); // Læs først som tekst
+  console.log('Server response:', textResponse); // Log hele svaret
+
+  if (!response.ok) {
+    throw new Error(`Fejl ved upload: ${response.status} - ${textResponse}`);
   }
+
+  const data = JSON.parse(textResponse); // Forsøg at parse JSON
+  newEvent.value.imageURL = `${API_URL}${data.imageUrl}`;
+} catch (error) {
+  console.error('Upload fejlede:', error);
+}
 };
 
 
