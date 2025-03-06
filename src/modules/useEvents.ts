@@ -79,7 +79,7 @@ export const useEvents = () => {
       validateEvent(event);
       const eventWithDefaults = setDefaultValues(event, userId);
 
-      const response = await fetch(`${API_URL}/events`, {
+      const response = await fetch(`${API_URL}events`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
