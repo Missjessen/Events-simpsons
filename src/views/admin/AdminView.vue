@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useEvents } from '../../modules/useEvents';
-import { API_URL } from '../../config'; // Import API_URL ét sted fra
+//import { API_URL } from '../../config'; // Import API_URL ét sted fra
 
 
 const { events, fetchEvents, addEvent, deleteEvent, error, loading } = useEvents();
@@ -75,54 +75,6 @@ const newEvent = ref({
   maxAttendees: 100,
   imageURL: '' // Updated after file upload
 });
-
-const file = ref<File | null>(null);
-
-const handleFileUpload = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  if (target.files?.length) {
-    file.value = target.files[0];
-  }
-};
-
-const uploadImage = async () => {
-  if (!file.value) {
-    alert('Vælg en fil først!');
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('image', file.value);
-
-  try {
-    const response = await fetch(`${API_URL}img/uploads`, {
-      method: 'POST',
-      body: formData
-    });
-
-    // Læs responsen som tekst først og log den
-    const textResponse = await response.text();
-    console.log('Server response:', textResponse); // Log hele responsen
-
-    if (!response.ok) {
-      throw new Error(`Fejl ved upload: ${response.status} - ${textResponse}`);
-    }
-
-    // Forsøg kun at parse JSON, hvis det faktisk er JSON
-    let data;
-    try {
-      data = JSON.parse(textResponse);
-    } catch {
-      throw new Error(`Server returnerede ikke JSON: ${textResponse}`);
-    }
-
-    newEvent.value.imageURL = `${API_URL}${data.imageUrl}`;
-  } catch (error) {
-    console.error('Upload fejlede:', error);
-  }
-};
-
-
 
 const addEventHandler = async () => {
   await addEvent({
@@ -143,6 +95,42 @@ const addEventHandler = async () => {
 onMounted(() => {
   fetchEvents();
 });
+
+
+const file = ref<File | null>(null);
+
+const handleFileUpload = (event: Event) => {
+
+  const target = event.target as HTMLInputElement;
+    if (target.files?.length) {
+        file.value = target.files[0];
+    }
+};
+
+const uploadImage = async () => {
+    if (!file.value) {
+        alert('Vælg en fil først!');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file.value);
+
+    try {
+        const response = await fetch('http://localhost:3000/api/upload', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        newEvent.value.imageURL = data.imageURL;  // Brug den korrekte newEvent-reference
+        console.log('✅ Event oprettet med billede:', newEvent.value.imageURL);
+    } catch (error) {
+        console.error('❌ Upload fejlede:', error);
+    }
+};
+
+
 </script>
 
 <style scoped>
