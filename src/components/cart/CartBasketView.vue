@@ -1,6 +1,6 @@
 <template>
     <transition name="fade-slide">
-      <div class="fixed inset-0 bg-black bg-opacity-50 flex justify-end" > <!-- Overlay + toggleCart -->
+      <div v-if="isCartVisible" class="fixed inset-0 bg-black bg-opacity-50 flex justify-end" > <!-- Overlay + toggleCart -->
         <div class="cart-content bg-[#181818] w-96 h-full p-4 overflow-y-auto" > <!-- Cart content & .stop -->
           <!-- top close X -->
           <button class="absolute top-3 right-4 text-4xl text-red-400 hover:text-red-700">&times;</button> <!-- Close button -->
@@ -45,6 +45,9 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
+
+const isCartVisible = ref(true);
 
 
 
