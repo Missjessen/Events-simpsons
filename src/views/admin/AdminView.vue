@@ -114,22 +114,30 @@ const uploadImage = async () => {
     }
 
     const formData = new FormData();
-    formData.append('image', file.value);
+    formData.append('file', file.value);  // Cloudinary kræver 'file' som nøgle
+    formData.append('upload_preset', 'din_upload_preset'); // Din upload preset fra Cloudinary
+    formData.append('folder', 'events'); // Valgfrit: Organiser billeder i mapper
 
     try {
-        const response = await fetch('http://localhost:3000/api/upload', {
+        const response = await fetch('https://api.cloudinary.com/v1_1/<DIT_CLOUD_NAME>/image/upload', {
             method: 'POST',
             body: formData
         });
 
         const data = await response.json();
-        newEvent.value.imageURL = data.imageURL;  // Brug den korrekte newEvent-reference
-        console.log('✅ Event oprettet med billede:', newEvent.value.imageURL);
+
+        if (data.secure_url) {
+            newEvent.value.imageURL = data.secure_url;  // Cloudinary returnerer 'secure_url'
+            console.log('✅ Event oprettet med billede:', newEvent.value.imageURL);
+        } else {
+            console.error('❌ Fejl ved upload:', data);
+            alert('Fejl ved upload: ' + data.error.message);
+        }
     } catch (error) {
         console.error('❌ Upload fejlede:', error);
+        alert('Fejl ved upload. Prøv igen.');
     }
 };
-
 
 </script>
 
