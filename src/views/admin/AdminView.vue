@@ -95,7 +95,7 @@ const uploadImage = async () => {
   formData.append('image', file.value);
 
   try {
-    const response = await fetch(`${API_URL}img/upload`, {
+    const response = await fetch(`${API_URL}img/uploads`, {
       method: 'POST',
       body: formData
     });
