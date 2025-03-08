@@ -95,24 +95,33 @@ const uploadImage = async () => {
   formData.append('image', file.value);
 
   try {
-  const response = await fetch(`${API_URL}/upload`, {
-    method: 'POST',
-    body: formData
-  });
+    const response = await fetch(`${API_URL}/upload`, {
+      method: 'POST',
+      body: formData
+    });
 
-  const textResponse = await response.text(); // Læs først som tekst
-  console.log('Server response:', textResponse); // Log hele svaret
+    // Læs responsen som tekst først og log den
+    const textResponse = await response.text();
+    console.log('Server response:', textResponse); // Log hele responsen
 
-  if (!response.ok) {
-    throw new Error(`Fejl ved upload: ${response.status} - ${textResponse}`);
+    if (!response.ok) {
+      throw new Error(`Fejl ved upload: ${response.status} - ${textResponse}`);
+    }
+
+    // Forsøg kun at parse JSON, hvis det faktisk er JSON
+    let data;
+    try {
+      data = JSON.parse(textResponse);
+    } catch {
+      throw new Error(`Server returnerede ikke JSON: ${textResponse}`);
+    }
+
+    newEvent.value.imageURL = `${API_URL}${data.imageUrl}`;
+  } catch (error) {
+    console.error('Upload fejlede:', error);
   }
-
-  const data = JSON.parse(textResponse); // Forsøg at parse JSON
-  newEvent.value.imageURL = `${API_URL}${data.imageUrl}`;
-} catch (error) {
-  console.error('Upload fejlede:', error);
-}
 };
+
 
 
 const addEventHandler = async () => {

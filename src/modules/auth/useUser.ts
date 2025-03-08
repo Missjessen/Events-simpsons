@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import type { User } from '../../interfaces/interfaces';
-import { API_URL } from '../../config'; // Import API_URL ét sted fra
+//import { API_URL } from '../../config'; // Import API_URL ét sted fra
 
 export const useUser = () => {
 
