@@ -2,15 +2,15 @@
   <div class="">
     <h2 class="text-2xl font-bold mb-4">Upcoming Events</h2>
 
-    <div v-if="loading" class="text-center">Loading...</div> <!-- Loading wait screen -->
-    <div v-else-if="error" class="text-center text-red-500">{{ error }}</div> <!-- Error message -->
+    <div v-if="loading" class="text-center">Loading...</div>
+    <div v-else-if="error" class="text-center text-red-500">{{ error }}</div>
 
     <div v-else class="flex flex-wrap -mx-2">
       <div v-for="event in events" :key="event._id" class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2">
         <div class="bg-white p-4 rounded-lg shadow-md">
-          <img :src="event.imageURL" alt="Event Image" class="w-full h-48 object-cover mb-4 rounded-lg"> <!-- Event image -->
+          <img :src="event.imageURL" alt="Event Image" class="w-full h-48 object-cover mb-4 rounded-lg">
           <h3 class="text-lg text-gray-700 font-semibold mb-2"> {{ event.title }} </h3>
-          <p class="text-gray-500 text-sm mb-2"> 📅 {{ formatDate(event.date) }} </p>
+          p class="text-gray-500 text-sm mb-2"> 📅 {{ formatDate(event.date) }} </p>
           <p class="text-gray-700"> 📍 {{ event.eventlocation }} </p>
           <p class="text-gray-600 mt-2"> {{ event.description }} </p>
           <p class="text-blue-500 font-bold mt-2">Max Attendees: {{ event.maxAttendees }} </p>
