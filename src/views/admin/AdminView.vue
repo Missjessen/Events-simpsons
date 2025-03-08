@@ -61,7 +61,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useEvents } from '../../modules/useEvents';
-//import { API_URL } from '../../config'; // Import API_URL ét sted fra
 
 
 const { events, fetchEvents, addEvent, deleteEvent, error, loading } = useEvents();
@@ -113,31 +112,32 @@ const uploadImage = async () => {
         return;
     }
 
-    const formData = new FormData();
-    formData.append('file', file.value);  // Cloudinary kræver 'file' som nøgle
-    formData.append('upload_preset', 'din_upload_preset'); // Din upload preset fra Cloudinary
-    formData.append('folder', 'events'); // Valgfrit: Organiser billeder i mapper
+const formData = new FormData();
+formData.append('file', file.value);
+formData.append('upload_preset', 'events_preset');  // ← Opdateret her
+formData.append('folder', 'events');  // Valgfrit for organisering
 
-    try {
-        const response = await fetch('https://api.cloudinary.com/v1_1/dwag6rqjf/image/upload', {
-            method: 'POST',
-            body: formData
-        });
+try {
+    const response = await fetch('https://api.cloudinary.com/v1_1/dwag6rqjf/image/upload', {
+        method: 'POST',
+        body: formData
+    });
 
-        const data = await response.json();
+    const data = await response.json();
 
-        if (data.secure_url) {
-            newEvent.value.imageURL = data.secure_url;  // Cloudinary returnerer 'secure_url'
-            console.log('✅ Event oprettet med billede:', newEvent.value.imageURL);
-        } else {
-            console.error('❌ Fejl ved upload:', data);
-            alert('Fejl ved upload: ' + data.error.message);
-        }
-    } catch (error) {
-        console.error('❌ Upload fejlede:', error);
-        alert('Fejl ved upload. Prøv igen.');
+    if (data.secure_url) {
+        newEvent.value.imageURL = data.secure_url;
+        console.log('✅ Event oprettet med billede:', newEvent.value.imageURL);
+    } else {
+        console.error('❌ Fejl ved upload:', data);
+        alert('Fejl ved upload: ' + data.error.message);
     }
+} catch (error) {
+    console.error('❌ Upload fejlede:', error);
+    alert('Fejl ved upload. Prøv igen.');
+}
 };
+
 
 </script>
 

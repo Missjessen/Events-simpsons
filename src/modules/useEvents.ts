@@ -12,7 +12,7 @@ export const useEvents = () => {
   const fetchEvents = async (): Promise<void> => {
     loading.value = true;
     try {
-      const response = await fetch(`${API_URL}/events`);
+      const response = await fetch(`${API_URL}events`);
       if (!response.ok) {
         throw new Error('No event data available');
       }
@@ -104,7 +104,7 @@ export const useEvents = () => {
 
   // Delete event from server
   const deleteEventFromServer = async (id: string, token: string): Promise<void> => {
-    const response = await fetch(`${API_URL}/events/${id}`, {
+    const response = await fetch(`${API_URL}events/${id}`, {
       method: 'DELETE',
       headers: {
         'auth-token': token

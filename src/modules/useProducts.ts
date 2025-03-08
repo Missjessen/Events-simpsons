@@ -9,12 +9,12 @@ export const useProducts = () => {
   const loading = ref<boolean>(false);
   const products = ref<Product[]>([]);
 
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_;
 
   const fetchProducts = async (): Promise<void> => {
     loading.value = true;
     try {
-      const response = await fetch(`${API_URL}/products`
+      const response = await fetch(`${API_URL}products`
       );
       if (!response.ok) {
         throw new Error('No data available');
@@ -72,7 +72,7 @@ const validateProduct = (product: newProducts):void => {
       const productWihtDefaults = setDefaultValues(product, userId);
 
 
-      const response = await fetch(`${API_URL}/products`, {
+      const response = await fetch(`${API_URL}products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ const validateProduct = (product: newProducts):void => {
   }
 
 const deleteProductFromServer = async (id:string, token:string ): Promise<void> => {
-  const response = await fetch(`${API_URL}/products/${id}`, {
+  const response = await fetch(`${API_URL}products/${id}`, {
     method: 'DELETE',
     headers: {
       'auth-token': token
