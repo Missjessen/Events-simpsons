@@ -119,7 +119,7 @@ const uploadImage = async () => {
     formData.append('folder', 'events'); // Valgfrit: Organiser billeder i mapper
 
     try {
-        const response = await fetch('https://api.cloudinary.com/v1_1/<DIT_CLOUD_NAME>/image/upload', {
+        const response = await fetch('https://api.cloudinary.com/v1_1/dwag6rqjf/image/upload', {
             method: 'POST',
             body: formData
         });
