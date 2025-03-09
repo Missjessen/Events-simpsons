@@ -12,22 +12,27 @@ export const useEvents = () => {
   const fetchEvents = async (): Promise<void> => {
     loading.value = true;
     try {
-      const response = await fetch(`${API_URL}/events`);
-      if (!response.ok) {
-        throw new Error('No event data available');
-      }
-      const data: Event[] = await response.json();
-      events.value = data.map(event => ({
-        ...event,
-        _id: event._id || crypto.randomUUID() // <-- Sikrer at hvert event har et ID, hvis API'et ikke returnerer det
-      }));
-      console.log("Events fetched", events.value);
+        const response = await fetch(`${API_URL}/events`);
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const errorText = await response.text();
+            console.error('Fejl ved API-kald:', errorText);
+            throw new Error('Serveren returnerede ikke gyldigt JSON. Tjek endpointet.');
+        }
+
+        const data: Event[] = await response.json();
+        events.value = data.map(event => ({
+            ...event,
+            _id: event._id || crypto.randomUUID()
+        }));
+        console.log("Events fetched", events.value);
     } catch (err) {
-      error.value = (err as Error).message;
+        error.value = (err as Error).message;
     } finally {
-      loading.value = false;
+        loading.value = false;
     }
-  };
+};
 
 
   // Get Token & User ID
