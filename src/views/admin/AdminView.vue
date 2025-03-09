@@ -11,7 +11,7 @@
       <form @submit.prevent="addEventHandler">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input type="text" v-model="newEvent.title" placeholder="Event Title" class="p-2 border rounded" required />
-          <input type="date" v-model="newEvent.date" class="p-2 border rounded" required />
+          <input type="datetime-local" v-model="newEvent.date" class="p-2 border rounded" required />
           <input type="text" v-model="newEvent.eventlocation" placeholder="Location" class="p-2 border rounded" required />
           <textarea v-model="newEvent.description" placeholder="Description" class="p-2 border rounded" required></textarea>
           <input type="number" v-model="newEvent.maxAttendees" placeholder="Max Attendees" class="p-2 border rounded" required />
@@ -62,9 +62,7 @@
 import { ref, onMounted } from 'vue';
 import { useEvents } from '../../modules/useEvents';
 
-
 const { events, fetchEvents, addEvent, deleteEvent, error, loading } = useEvents();
-
 
 const newEvent = ref({
   title: '',
@@ -72,34 +70,26 @@ const newEvent = ref({
   eventlocation: '',
   description: '',
   maxAttendees: 100,
-  imageURL: '' // Updated after file upload
+  imageURL: ''
 });
 
-function formatDate(dateString: string) {
-    if (!dateString) return '';  // Håndter tomme datoer
-
-    // Hvis formatet allerede er korrekt (yyyy-MM-dd), returner det direkte
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-        return dateString;
-    }
-
+// 🔹 Datoformatteringsfunktion til API
+const formatDateTimeForAPI = (dateString: string) => {
     const date = new Date(dateString);
-
-    // Tjek om datoen er gyldig
-    if (isNaN(date.getTime())) {
-        console.error('Ugyldig dato:', dateString);
-        return '';
-    }
-
-    return date.toISOString().split('T')[0];
-}
+    return date.toISOString().replace('Z', '');  // Fjerner tidszone (UTC-offset)
+};
 
 const addEventHandler = async () => {
-    const formattedDate = formatDate(newEvent.value.date); // Konverter datoformat
+    if (!newEvent.value.date) {
+        alert('Vælg en gyldig dato og tidspunkt!');
+        return;
+    }
+
+    const formattedDate = formatDateTimeForAPI(newEvent.value.date);  
 
     await addEvent({
         ...newEvent.value,
-        date: formattedDate  // Brug det formaterede datoformat
+        date: formattedDate
     });
 
     newEvent.value = {
