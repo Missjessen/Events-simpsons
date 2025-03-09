@@ -75,20 +75,29 @@ const newEvent = ref({
   imageURL: '' // Updated after file upload
 });
 
+const formatDate = (isoDate: string) => {
+    const date = new Date(isoDate);
+    return date.toISOString().split('T')[0]; // Konverterer til "yyyy-MM-dd"
+};
+
 const addEventHandler = async () => {
-  await addEvent({
-    ...newEvent.value,
-    date: new Date(newEvent.value.date)
-  });
-  newEvent.value = {
-    title: '',
-    date: '',
-    eventlocation: '',
-    description: '',
-    maxAttendees: 100,
-    imageURL: ''
-  };
-  await fetchEvents();
+    const formattedDate = formatDate(newEvent.value.date); // Konverter datoformat
+
+    await addEvent({
+        ...newEvent.value,
+        date: formattedDate  // Brug det formaterede datoformat
+    });
+
+    newEvent.value = {
+        title: '',
+        date: '',
+        eventlocation: '',
+        description: '',
+        maxAttendees: 100,
+        imageURL: ''
+    };
+
+    await fetchEvents();
 };
 
 onMounted(() => {
@@ -121,7 +130,7 @@ try {
     const response = await fetch('https://api.cloudinary.com/v1_1/dwag6rqjf/image/upload', {
         method: 'POST',
         body: formData,
-        mode: 'cors' 
+        mode: 'cors'
     });
 
     const data = await response.json();

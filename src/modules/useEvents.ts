@@ -62,7 +62,7 @@ export const useEvents = () => {
     return {
       _id: event._id || crypto.randomUUID(),
       title: event.title!,
-      date: event.date || new Date(),
+      date: event.date || new Date().toISOString(),
       eventlocation: event.eventlocation || 'Unknown Location',
       description: event.description || 'No description provided',
       maxAttendees: event.maxAttendees || 100,

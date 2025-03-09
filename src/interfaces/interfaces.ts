@@ -30,7 +30,7 @@ createdAt: string
 export type Event = {
   _id: string;
   title: string;
-  date: Date;
+  date: string;
   eventlocation: string;
   description: string;
   maxAttendees: number;
