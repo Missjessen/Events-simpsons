@@ -120,7 +120,8 @@ formData.append('folder', 'events');  // Valgfrit for organisering
 try {
     const response = await fetch('https://api.cloudinary.com/v1_1/dwag6rqjf/image/upload', {
         method: 'POST',
-        body: formData
+        body: formData,
+        mode: 'cors' 
     });
 
     const data = await response.json();
