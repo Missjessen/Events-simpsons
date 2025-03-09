@@ -76,8 +76,22 @@ const newEvent = ref({
 });
 
 function formatDate(dateString: string) {
+    if (!dateString) return '';  // Håndter tomme datoer
+
+    // Hvis formatet allerede er korrekt (yyyy-MM-dd), returner det direkte
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        return dateString;
+    }
+
     const date = new Date(dateString);
-    return date.toISOString().split('T')[0]; // Uddrager kun "YYYY-MM-DD"
+
+    // Tjek om datoen er gyldig
+    if (isNaN(date.getTime())) {
+        console.error('Ugyldig dato:', dateString);
+        return '';
+    }
+
+    return date.toISOString().split('T')[0];
 }
 
 const addEventHandler = async () => {
@@ -121,31 +135,36 @@ const uploadImage = async () => {
         return;
     }
 
-const formData = new FormData();
-formData.append('file', file.value);
-formData.append('upload_preset', 'events_preset');  // ← Opret her
-formData.append('folder', 'events');  // Valgfrit for organisering
+    const formData = new FormData();
+    formData.append('file', file.value);
+    formData.append('upload_preset', 'events_preset');
+    formData.append('folder', 'events');
 
-try {
-    const response = await fetch('https://api.cloudinary.com/v1_1/dwag6rqjf/image/upload', {
-        method: 'POST',
-        body: formData,
-        mode: 'cors'
-    });
+    try {
+        const response = await fetch('https://api.cloudinary.com/v1_1/dwag6rqjf/image/upload', {
+            method: 'POST',
+            body: formData,
+            mode: 'cors'
+        });
 
-    const data = await response.json();
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Cloudinary returnerede ikke JSON. Tjek endpointet.');
+        }
 
-    if (data.secure_url) {
-        newEvent.value.imageURL = data.secure_url;
-        console.log('✅ Event oprettet med billede:', newEvent.value.imageURL);
-    } else {
-        console.error('❌ Fejl ved upload:', data);
-        alert('Fejl ved upload: ' + data.error.message);
+        const data = await response.json();
+
+        if (data.secure_url) {
+            newEvent.value.imageURL = data.secure_url;
+            console.log('✅ Event oprettet med billede:', newEvent.value.imageURL);
+        } else {
+            console.error('❌ Fejl ved upload:', data);
+            alert('Fejl ved upload: ' + data.error.message);
+        }
+    } catch (error) {
+        console.error('❌ Upload fejlede:', error);
+        alert('Fejl ved upload. Prøv igen.');
     }
-} catch (error) {
-    console.error('❌ Upload fejlede:', error);
-    alert('Fejl ved upload. Prøv igen.');
-}
 };
 
 
