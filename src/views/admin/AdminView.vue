@@ -123,7 +123,7 @@ const uploadImage = async () => {
 
 const formData = new FormData();
 formData.append('file', file.value);
-formData.append('upload_preset', 'events_preset');  // ← Opdateret her
+formData.append('upload_preset', 'events_preset');  // ← Opret her
 formData.append('folder', 'events');  // Valgfrit for organisering
 
 try {

@@ -14,7 +14,6 @@
           <p class="text-gray-700"> 📍 {{ event.eventlocation }} </p>
           <p class="text-gray-600 mt-2"> {{ event.description }} </p>
           <p class="text-blue-500 font-bold mt-2">Max Attendees: {{ event.maxAttendees }} </p>
-          
           <div class="flex justify-between mt-4">
             <button class="bg-blue-500 text-white px-1 py-2 rounded hover:bg-blue-600">View Details</button>
             <button class="bg-red-500 text-white px-1 py-2 rounded hover:bg-red-600" @click="deleteEvent(event._id)">Delete</button> <!-- Brug _id i stedet for title -->

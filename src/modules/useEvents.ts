@@ -62,7 +62,7 @@ export const useEvents = () => {
     return {
       _id: event._id || crypto.randomUUID(),
       title: event.title!,
-      date: event.date || new Date().toISOString(),
+      date: event.date || new Date(),
       eventlocation: event.eventlocation || 'Unknown Location',
       description: event.description || 'No description provided',
       maxAttendees: event.maxAttendees || 100,
@@ -79,7 +79,7 @@ export const useEvents = () => {
       validateEvent(event);
       const eventWithDefaults = setDefaultValues(event, userId);
 
-      const response = await fetch(`${API_URL}/events`, {
+      const response = await fetch(`${API_URL}events`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
