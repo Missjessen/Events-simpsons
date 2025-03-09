@@ -75,10 +75,10 @@ const newEvent = ref({
   imageURL: '' // Updated after file upload
 });
 
-const formatDate = (isoDate: string) => {
-    const date = new Date(isoDate);
-    return date.toISOString().split('T')[0]; // Konverterer til "yyyy-MM-dd"
-};
+function formatDate(dateString: string) {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0]; // Uddrager kun "YYYY-MM-DD"
+}
 
 const addEventHandler = async () => {
     const formattedDate = formatDate(newEvent.value.date); // Konverter datoformat
