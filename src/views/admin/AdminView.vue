@@ -11,7 +11,7 @@
       <form @submit.prevent="addEventHandler">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input type="text" v-model="newEvent.title" placeholder="Event Title" class="p-2 border rounded" required />
-          <input type="datetime-local" v-model="newEvent.date" class="p-2 border rounded" required />
+          <input type="date" v-model="newEvent.date" class="p-2 border rounded" required />
           <input type="text" v-model="newEvent.eventlocation" placeholder="Location" class="p-2 border rounded" required />
           <textarea v-model="newEvent.description" placeholder="Description" class="p-2 border rounded" required></textarea>
           <input type="number" v-model="newEvent.maxAttendees" placeholder="Max Attendees" class="p-2 border rounded" required />
