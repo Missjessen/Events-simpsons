@@ -83,7 +83,7 @@ const formatDateTimeForAPI = (dateString: string): string => {
         return dateString;
     }
 
-    return format(date, 'yyyy-MM-dd HH:mm:ss'); // Eksakt som `DATE_FORMAT_API`
+    return format(date, 'yyyy-MM-dd'); // Eksakt som `DATE_FORMAT_API`
 };
 
 const addEventHandler = async () => {

@@ -46,7 +46,7 @@ export const useEvents = () => {
           return '';
       }
 
-      return format(date, "yyyy-MM-dd'T'HH:mm");  // Returnerer dato i formatet til 'datetime-local'
+      return format(date, "yyyy-MM-dd");  // Returnerer dato i formatet til 'datetime-local'
   };
 
 
