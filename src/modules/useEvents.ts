@@ -1,3 +1,4 @@
+import { format, parseISO, isValid } from 'date-fns';
 import { ref } from 'vue';
 import type { Event } from '../interfaces/interfaces';
 
@@ -5,43 +6,49 @@ export const useEvents = () => {
   const error = ref<string | null>(null);
   const loading = ref<boolean>(false);
   const events = ref<Event[]>([]);
+  //const DATE_FORMAT_API = 'YYYY-MM-DDTHH:mm:ss';  // ISO 8601 uden 'Z'
+
 
   const API_URL = import.meta.env.VITE_API_URL;
 
   // Fetch events
-  const fetchEvents = async (): Promise<void> => {
-    loading.value = true;
-    try {
-        const response = await fetch(`${API_URL}/events`);
-        const data: Event[] = await response.json();
+    // 🔹 Fetch events
+    const fetchEvents = async (): Promise<void> => {
+      loading.value = true;
+      try {
+          const response = await fetch(`${API_URL}/events`);
+          const data: Event[] = await response.json();
 
-        events.value = data.map(event => ({
-          ...event,
-          date: formatDateTimeForInput(typeof event.date === 'string' ? event.date : event.date?.toISOString() || '')  // Fallback til tom tekst ved manglende dato
-      }));
-      console.log("Event Dates:", data.map(event => event.date));
+          events.value = data.map(event => ({
+            ...event,
+            date: formatDateTimeForInput(typeof event.date === 'string' ? event.date : event.date.toISOString())
+        }));
 
-        console.log("Events fetched", events.value);
-    } catch (err) {
-        error.value = (err as Error).message;
-    } finally {
-        loading.value = false;
-    }
-};
+          console.log("Event Dates:", data.map(event => event.date));
+          console.log("Events fetched", events.value);
+      } catch (err) {
+          error.value = (err as Error).message;
+      } finally {
+          loading.value = false;
+      }
+    };
 
-const formatDateTimeForInput = (isoDate: string | null | undefined): string => {
-  if (!isoDate) return '';  // Hvis datoen er `null` eller `undefined`, returnér tom tekst
 
-  const date = new Date(isoDate);
 
-  if (isNaN(date.getTime())) {
-      console.error(`❌ Ugyldig dato modtaget: ${isoDate}`);
-      return '';  // Returnér tom tekst hvis datoen ikke kan fortolkes
-  }
+    // 🚀 Konverter ISO 8601 til 'YYYY-MM-DDTHH:mm'
+    const formatDateTimeForInput = (isoDate: string | null | undefined): string => {
+      if (!isoDate) return '';
 
-  // Returnerer datoen i det ønskede format 'YYYY-MM-DDTHH:mm'
-  return date.toISOString().slice(0, 16);
-};
+      const date = parseISO(isoDate); // Brug `parseISO` for at undgå fejl ved forskellige formater
+
+      if (!isValid(date)) {
+          console.error(`❌ Ugyldig dato modtaget: ${isoDate}`);
+          return '';
+      }
+
+      return format(date, "yyyy-MM-dd'T'HH:mm");  // Returnerer dato i formatet til 'datetime-local'
+  };
+
 
   // Get Token & User ID
   const getTokenAndUserId = (): { token: string; userId: string } => {

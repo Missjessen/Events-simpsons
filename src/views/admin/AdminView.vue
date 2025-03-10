@@ -61,6 +61,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useEvents } from '../../modules/useEvents';
+import { format } from 'date-fns';
+
 
 const { events, fetchEvents, addEvent, deleteEvent, error, loading } = useEvents();
 
@@ -73,10 +75,15 @@ const newEvent = ref({
   imageURL: ''
 });
 
-// 🔹 Datoformatteringsfunktion til API
-const formatDateTimeForAPI = (dateString: string) => {
+const formatDateTimeForAPI = (dateString: string): string => {
     const date = new Date(dateString);
-    return date.toISOString().replace('Z', '');  // Fjerner tidszone (UTC-offset)
+
+    if (isNaN(date.getTime())) {
+        console.error(` Ugyldig dato modtaget ved afsendelse: ${dateString}`);
+        return dateString;
+    }
+
+    return format(date, 'yyyy-MM-dd HH:mm:ss'); // Eksakt som `DATE_FORMAT_API`
 };
 
 const addEventHandler = async () => {
@@ -85,7 +92,7 @@ const addEventHandler = async () => {
         return;
     }
 
-    const formattedDate = formatDateTimeForAPI(newEvent.value.date);  
+    const formattedDate = formatDateTimeForAPI(newEvent.value.date);
 
     await addEvent({
         ...newEvent.value,
